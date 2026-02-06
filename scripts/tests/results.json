@@ -1,0 +1,47 @@
+[
+    {
+        "sample": "frame_20260109-145336.png",
+        "clean": 5862.5376379702775,
+        "pixel_defect": 5857.538384802988,
+        "pixel_defect_high_sens": 5857.538384802988,
+        "pixel_detected_high": false,
+        "stain_defect": 5784.318229689792,
+        "noise_defect": 990.3438484317612
+    },
+    {
+        "sample": "frame_20260109-144607.png",
+        "clean": 5862.2279857249605,
+        "pixel_defect": 5854.8606486280605,
+        "pixel_defect_high_sens": 5854.8606486280605,
+        "pixel_detected_high": false,
+        "stain_defect": 5860.817019636016,
+        "noise_defect": -40448.323866758634
+    },
+    {
+        "sample": "frame_20260109-144736.png",
+        "clean": 5862.024749076701,
+        "pixel_defect": 5861.452383507289,
+        "pixel_defect_high_sens": 5861.452383507289,
+        "pixel_detected_high": false,
+        "stain_defect": 5696.967619999762,
+        "noise_defect": -17095.774529899834
+    },
+    {
+        "sample": "frame_20260109-144936.png",
+        "clean": 5861.99399380825,
+        "pixel_defect": 5859.912170371564,
+        "pixel_defect_high_sens": 5859.912170371564,
+        "pixel_detected_high": false,
+        "stain_defect": 5417.769297633316,
+        "noise_defect": -57266.32908288549
+    },
+    {
+        "sample": "frame_20260109-145936.png",
+        "clean": 5864.165250221607,
+        "pixel_defect": 5860.050541635693,
+        "pixel_defect_high_sens": 5860.050541635693,
+        "pixel_detected_high": false,
+        "stain_defect": 5850.0876489044485,
+        "noise_defect": 527.5172510464181
+    }
+]

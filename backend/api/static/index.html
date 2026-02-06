@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Nuvant Vision - Auditoría de Calidad Textil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen">
+    <div class="container mx-auto p-6">
+        <header class="mb-8 border-b border-slate-700 pb-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
+                    Nuvant Vision System</h1>
+                <div class="flex items-center gap-2 mt-1">
+                    <p class="text-slate-400">Inspección de Telas Industrial - Núcleo Estadístico V32</p>
+                    <span
+                        class="px-2 py-0.5 bg-orange-900/50 text-orange-400 text-[10px] font-bold rounded border border-orange-800">AMBIENTE
+                        PILOTO / DESARROLLO</span>
+                </div>
+            </div>
+            <div id="connectionStatus" class="px-3 py-1 bg-red-900 rounded-full text-xs animate-pulse font-bold">
+                Desconectado</div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Panel Izquierdo: Configuración de Referencia -->
+            <div class="bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-700">
+                <h2 class="text-xl font-semibold mb-4 text-cyan-300">Fase 1: Configuración de Referencia</h2>
+
+                <!-- Crear Referencia -->
+                <div class="mb-6">
+                    <div class="flex items-center gap-2 mb-1">
+                        <label class="block text-sm text-slate-400">Nombre de Nueva Referencia</label>
+                        <span
+                            class="px-2 py-0.5 bg-red-900 text-red-200 text-[9px] font-black rounded border border-red-700 animate-pulse">🚨
+                            SOLO ADMIN</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="refName"
+                            class="flex-1 bg-slate-900 border border-slate-600 rounded p-2 focus:border-cyan-400 outline-none"
+                            placeholder="ej. Mezclilla-Lote-001">
+                        <button onclick="createReference()"
+                            class="bg-cyan-600 hover:bg-cyan-500 px-4 py-2 rounded font-medium transition">Crear</button>
+                    </div>
+                </div>
+
+                <!-- Seleccionar Referencia -->
+                <div class="mb-6">
+                    <label class="block text-sm text-slate-400 mb-1">Referencia Activa</label>
+                    <div class="flex gap-2">
+                        <select id="refSelect" onchange="loadRefDetails()"
+                            class="w-full bg-slate-900 border border-slate-600 rounded p-2"></select>
+                        <button id="reconnectBtn" onclick="loadRefDetails()"
+                            class="hidden bg-cyan-700 hover:bg-cyan-600 px-3 rounded text-white font-bold transition flex items-center justify-center"
+                            title="Reconectar Cámara">🔄</button>
+                        <button id="deleteRefBtn" onclick="deleteReference()" disabled
+                            class="bg-red-700 hover:bg-red-600 px-3 rounded text-white font-bold transition opacity-50 cursor-not-allowed">🗑️</button>
+                    </div>
+                </div>
+
+                <!-- Clasificación de Defectos -->
+                <div class="mb-6 p-4 border border-slate-700 rounded bg-slate-800">
+                    <label class="block text-sm text-slate-400 mb-2">Clasificación de Defectos</label>
+                    <div id="defectTypesContainer"></div>
+                    <div class="mt-2 p-2 bg-blue-900/20 border border-blue-800/50 rounded">
+                        <p class="text-[10px] text-blue-300 italic leading-tight">
+                            💡 <b>Instrucción:</b> Si el sistema detecta un fallo, selecciona el tipo y guárdalo para
+                            entrenar la IA en el reconocimiento de causas raíz.
+                        </p>
+                    </div>
+
+                    <!-- Añadir Nuevo Tipo -->
+                    <div class="mt-3 pt-3 border-t border-slate-700">
+                        <div class="flex items-center gap-2 mb-1">
+                            <label class="block text-xs text-slate-400">Añadir Nuevo Tipo:</label>
+                            <span
+                                class="px-2 py-0.5 bg-red-900/40 text-red-300 text-[8px] font-bold rounded border border-red-800">🚨
+                                SOLO ADMIN</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="text" id="newDefectType"
+                                class="flex-1 bg-slate-900 border border-slate-600 rounded p-2 text-sm focus:border-cyan-400 outline-none"
+                                placeholder="ej. Hilo Suelto">
+                            <button onclick="addNewDefectType()"
+                                class="bg-cyan-700 hover:bg-cyan-600 px-3 rounded text-white text-sm font-bold transition">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Datos de Entrenamiento -->
+                <div class="p-4 bg-slate-900 rounded-lg border border-slate-700">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-sm font-semibold text-slate-300">Entrenamiento del Modelo</h3>
+                        <span
+                            class="px-2 py-0.5 bg-red-900/40 text-red-300 text-[8px] font-bold rounded border border-red-800">🚨
+                            SOLO ADMIN</span>
+                    </div>
+
+                    <!-- Botón de Archivos Personalizado (Evita "Browse..." en inglés) -->
+                    <div class="mb-3">
+                        <label for="trainingFiles"
+                            class="cursor-pointer bg-cyan-900 hover:bg-cyan-800 text-cyan-300 px-4 py-2 rounded-full text-sm font-semibold inline-block border border-cyan-700 transition">
+                            📁 Seleccionar Imágenes para Entrenar
+                        </label>
+                        <input type="file" id="trainingFiles" multiple class="hidden"
+                            onchange="updateFileLabel(this)" />
+                        <span id="fileLimitNote" class="block text-[10px] text-slate-500 mt-1">Sugerencia: Mínimo 10
+                            imágenes libres de defectos.</span>
+                        <div id="selectedFilesInfo" class="text-xs text-slate-400 mt-2 font-mono truncate"></div>
+                    </div>
+
+                    <div class="mt-3 p-3 bg-slate-800 rounded border border-slate-700 text-xs text-slate-400">
+                        <label class="flex justify-between mb-1">
+                            <span>Rigor / Contaminación (0.01 = 1% fallos):</span>
+                            <span id="contVal" class="font-mono text-cyan-300">0.010</span>
+                        </label>
+                        <input type="range" id="contRange" min="0.001" max="0.05" step="0.001" value="0.01"
+                            oninput="document.getElementById('contVal').textContent = parseFloat(this.value).toFixed(3)"
+                            class="w-full h-1 bg-slate-600 rounded-lg appearance-none cursor-pointer accent-cyan-500 mb-2">
+
+                        <label class="flex justify-between mb-1">
+                            <span>Sensibilidad (Varianza PCA):</span>
+                            <span id="pcaVal" class="font-mono text-cyan-300">0.95</span>
+                        </label>
+                        <input type="range" id="pcaRange" min="0.50" max="0.99" step="0.01" value="0.95"
+                            oninput="document.getElementById('pcaVal').textContent = parseFloat(this.value).toFixed(2)"
+                            class="w-full h-1 bg-slate-600 rounded-lg appearance-none cursor-pointer accent-cyan-500 mb-2">
+                    </div>
+
+                    <div class="flex gap-2 mt-3">
+                        <button onclick="uploadImages()"
+                            class="flex-1 bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded text-sm transition font-medium">1.
+                            Subir a Servidor</button>
+                        <button onclick="trainModel()"
+                            class="flex-1 bg-green-700 hover:bg-green-600 px-3 py-2 rounded text-sm font-bold transition">2.
+                            Iniciar Entrenamiento</button>
+                    </div>
+                    <p id="trainStatus"
+                        class="mt-2 text-xs text-orange-400 opacity-0 transition-opacity text-center font-bold">
+                        Procesando...
+                    </p>
+                </div>
+            </div>
+
+            <!-- Panel Derecho: Inspección -->
+            <div class="bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-700">
+                <h2 class="text-xl font-semibold mb-4 text-purple-300">Fase 2: Inspección en Tiempo Real</h2>
+
+                <div class="relative w-full aspect-video bg-black rounded-lg overflow-hidden border-2 border-slate-600 group"
+                    id="videoContainer">
+                    <video id="videoElement" autoplay muted class="w-full h-full object-cover hidden"></video>
+                    <div id="dropZone"
+                        class="absolute inset-0 flex flex-col items-center justify-center text-slate-500 border-2 border-dashed border-slate-600 m-2 rounded-lg group-hover:border-slate-400 transition cursor-pointer">
+                        <p>Arrastre Imagen para Probar</p>
+                        <p class="text-xs">(Simulación de Cámara)</p>
+                    </div>
+
+                    <!-- Capa de Mapa de Calor -->
+                    <img id="heatmapOverlay"
+                        class="absolute inset-0 w-full h-full object-contain pointer-events-none opacity-50 hidden" />
+
+                    <!-- Indicador de Resultado -->
+                    <div id="resultBadge"
+                        class="absolute top-4 right-4 px-4 py-2 rounded-lg font-bold text-xl hidden shadow-xl bg-slate-900/80 backdrop-blur">
+                        Procesando...
+                    </div>
+
+                    <!-- Advertencia de Calidad (Nueva) -->
+                    <div id="qualityBadge"
+                        class="absolute bottom-4 left-4 right-4 px-3 py-1.5 rounded-lg font-bold text-[10px] hidden shadow-lg bg-orange-600/90 text-white text-center backdrop-blur animate-bounce">
+                        ⚠️ ADVERTENCIA DE CALIDAD
+                    </div>
+                </div>
+
+                <!-- Controles de Heatmap y Versión -->
+                <div class="mt-4 flex flex-col gap-2 bg-slate-900 p-3 rounded border border-slate-700">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="showHeatmap" class="w-4 h-4 accent-cyan-500" checked
+                                onchange="toggleHeatmap(this.checked)">
+                            <label for="showHeatmap" class="text-xs text-slate-300">Mostrar Localización (Mapa de
+                                Calor)</label>
+                        </div>
+                        <div class="text-[10px] text-slate-500 font-mono text-right">
+                            VERSIÓN: <span id="modelVersion" class="text-slate-300">DESCONOCIDA</span>
+                        </div>
+                    </div>
+                    <!-- Aviso de Compatibilidad -->
+                    <div id="v32Warning" class="text-[9px] text-orange-500 italic hidden">
+                        ⚠️ La localización requiere un modelo entrenado en V32 (PatchCore).
+                    </div>
+                </div>
+
+                <!-- Métricas -->
+                <div class="mt-4 grid grid-cols-2 gap-4">
+                    <div class="bg-slate-900 p-3 rounded">
+                        <p class="text-xs text-slate-400">Puntaje de Anomalía (Distancia)</p>
+                        <p id="scoreVal" class="text-xl font-mono text-cyan-400">0.00</p>
+                    </div>
+                    <div class="bg-slate-900 p-3 rounded">
+                        <p class="text-xs text-slate-400">Velocidad</p>
+                        <p id="fpsVal" class="text-lg font-mono text-slate-300">0 fps</p>
+                    </div>
+                </div>
+
+                <!-- Ajuste de Sensibilidad -->
+                <div class="mt-4 p-4 bg-slate-900 rounded border border-slate-700">
+                    <p class="text-xs font-semibold text-slate-400 mb-2 uppercase">Ajuste de Umbral en Caliente</p>
+                    <div class="flex items-center gap-4">
+                        <span class="text-[10px] text-slate-500">IGNORAR</span>
+                        <input type="range" id="sensOffset" min="-1000" max="1000" step="5" value="0"
+                            class="flex-1 h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                            oninput="updateSensLevel(this.value); document.getElementById('currentSensVal').textContent = (this.value > 0 ? '+' : '') + this.value">
+                        <span class="text-[10px] text-slate-500">ESTRICTO</span>
+                    </div>
+                    <div class="text-center mt-1">
+                        <span id="currentSensVal" class="text-xs font-mono text-orange-400">0</span>
+                    </div>
+                    <p class="text-[10px] text-slate-500 mt-1 text-center italic">Derecha: Mas estricto (Detecta fallos
+                        leves). Izquierda: Menos estricto.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API = `${window.location.origin}/api`;
+        const WS = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/inference/ws`;
+        let activeWs = null;
+        let lastDefectData = null;
+
+        async function refreshRefs() {
+            const res = await fetch(`${API}/references/`);
+            const data = await res.json();
+            const sel = document.getElementById('refSelect');
+            if (!sel) return;
+            sel.innerHTML = '<option value="">Seleccione una Referencia...</option>';
+            data.forEach(r => {
+                const opt = document.createElement('option');
+                opt.value = r.id;
+                opt.textContent = `${r.name} (ID: ${r.id}) ${r.model_path ? '✅ Listo' : '⚠️ Sin Modelo'}`;
+                sel.appendChild(opt);
+            });
+        }
+
+        function updateFileLabel(input) {
+            const info = document.getElementById('selectedFilesInfo');
+            if (input.files && input.files.length > 0) {
+                info.textContent = `📁 ${input.files.length} archivo(s) seleccionado(s)`;
+            } else {
+                info.textContent = "";
+            }
+        }
+
+        async function createReference() {
+            const name = document.getElementById('refName').value;
+            if (!name) return;
+            const res = await fetch(`${API}/references/?name=${encodeURIComponent(name)}`, { method: 'POST' });
+            if (res.ok) {
+                document.getElementById('refName').value = '';
+                refreshRefs();
+            } else { alert("Error al crear referencia"); }
+        }
+
+        async function uploadImages() {
+            const refId = document.getElementById('refSelect').value;
+            if (!refId) return alert("Seleccione una referencia primero");
+            const files = document.getElementById('trainingFiles').files;
+            if (files.length === 0) return alert("Seleccione archivos");
+
+            const fd = new FormData();
+            for (let f of files) fd.append('files', f);
+
+            const res = await fetch(`${API}/references/${refId}/upload_samples`, { method: 'POST', body: fd });
+            if (res.ok) { alert("¡Imágenes subidas!"); document.getElementById('trainingFiles').value = ""; }
+        }
+
+        async function trainModel() {
+            const refId = document.getElementById('refSelect').value;
+            if (!refId) return alert("Seleccione una referencia");
+
+            const status = document.getElementById('trainStatus');
+            status.textContent = "⚙️ Entrenando... (Esto puede tardar unos segundos)";
+            status.classList.remove('opacity-0');
+
+            try {
+                const payload = {
+                    contamination: parseFloat(document.getElementById('contRange').value),
+                    pca_variance: parseFloat(document.getElementById('pcaRange').value),
+                    sensitivity: 0.0
+                };
+
+                const res = await fetch(`${API}/references/${refId}/train`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    status.textContent = "¡Entrenamiento Completado! ✅";
+                    refreshRefs();
+                } else {
+                    status.textContent = "❌ Error: " + (data.detail || "Fallo en el servidor");
+                }
+            } catch (err) {
+                console.error(err);
+                status.textContent = "❌ Error de conexión o servidor";
+            }
+        }
+
+        const dropZone = document.getElementById('dropZone');
+        if (dropZone) {
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); ev.stopPropagation(); }, false));
+            dropZone.addEventListener('drop', (e) => handleFiles(e.dataTransfer.files), false);
+        }
+
+        function handleFiles(files) {
+            const file = files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.readAsArrayBuffer(file);
+                reader.onloadend = () => {
+                    const url = URL.createObjectURL(file);
+                    dropZone.innerHTML = `<img src="${url}" class="w-full h-full object-contain" />`;
+                    dropZone.classList.remove('border-2', 'border-dashed');
+                    sendToWs(reader.result);
+                }
+            }
+        }
+
+        function connectWs(refId) {
+            console.log(`Intentando conectar a ref ${refId}...`);
+            if (activeWs) activeWs.close();
+            activeWs = new WebSocket(`${WS}/${refId}`);
+
+            activeWs.onopen = () => {
+                const status = document.getElementById('connectionStatus');
+                const recBtn = document.getElementById('reconnectBtn');
+                if (status) {
+                    status.textContent = "Conectado";
+                    status.className = "px-3 py-1 bg-green-600 rounded-full text-xs font-bold";
+                }
+                if (recBtn) {
+                    // Estado Permanente: Atenuado pero visible si está conectado
+                    recBtn.className = "bg-slate-700 hover:bg-slate-600 px-3 rounded text-slate-400 font-bold transition flex items-center justify-center opacity-50";
+                    recBtn.title = "Conexión Activa";
+                }
+                updateSensLevel(document.getElementById('sensOffset').value);
+            };
+
+            activeWs.onmessage = (event) => updateUI(JSON.parse(event.data));
+
+            activeWs.onclose = (e) => {
+                console.log("WebSocket cerrado:", e);
+                const status = document.getElementById('connectionStatus');
+                const recBtn = document.getElementById('reconnectBtn');
+                if (status) {
+                    status.textContent = "Desconectado";
+                    status.className = "px-3 py-1 bg-red-900 rounded-full text-xs animate-pulse font-bold";
+                }
+                // Activar modo alerta en el botón si hay referencia
+                if (recBtn && document.getElementById('refSelect').value) {
+                    recBtn.className = "bg-cyan-700 hover:bg-blue-600 px-3 rounded text-white font-bold transition flex items-center justify-center animate-pulse";
+                    recBtn.title = "Reconectar Cámara";
+                }
+            };
+
+            activeWs.onerror = (err) => {
+                console.error("WS Error:", err);
+                const recBtn = document.getElementById('reconnectBtn');
+                if (recBtn && document.getElementById('refSelect').value) {
+                    recBtn.className = "bg-orange-700 hover:bg-orange-600 px-3 rounded text-white font-bold transition flex items-center justify-center animate-pulse";
+                }
+            };
+        }
+
+        function sendToWs(buffer) {
+            if (activeWs && activeWs.readyState === WebSocket.OPEN) activeWs.send(buffer);
+            else alert("WebSocket no conectado. Seleccione una referencia entrenada.");
+        }
+
+        function updateSensLevel(val) {
+            if (activeWs && activeWs.readyState === WebSocket.OPEN) {
+                activeWs.send(JSON.stringify({ type: "set_sensitivity", value: parseFloat(val) }));
+            }
+        }
+
+        function toggleHeatmap(show) {
+            const overlay = document.getElementById('heatmapOverlay');
+            if (show && overlay.src) overlay.classList.remove('hidden');
+            else overlay.classList.add('hidden');
+        }
+
+        function updateUI(data) {
+            const badge = document.getElementById('resultBadge');
+            const scoreEl = document.getElementById('scoreVal');
+            const heatmapOverlay = document.getElementById('heatmapOverlay');
+            const modelVerEl = document.getElementById('modelVersion');
+            const showHeatmap = document.getElementById('showHeatmap').checked;
+
+            if (badge) {
+                badge.classList.remove('hidden');
+                if (data.is_defect) {
+                    badge.textContent = "DEFECTO DETECTADO";
+                    badge.className = "absolute top-4 right-4 px-4 py-2 rounded-lg font-bold text-xl shadow-xl backdrop-blur bg-red-600 text-white animate-pulse";
+                    if (data.recognition && data.recognition.label) {
+                        badge.innerHTML = `DEFECTO DETECTADO<br/><span class="text-xs opacity-90">Tipo: ${data.recognition.label} (${Math.round(data.recognition.confidence * 100)}%)</span>`;
+                    }
+                }
+            }
+
+            // Quality Warning Support (Nueva)
+            const qBadge = document.getElementById('qualityBadge');
+            if (qBadge) {
+                if (data.quality_warning) {
+                    qBadge.textContent = "⚠️ " + data.quality_warning;
+                    qBadge.classList.remove('hidden');
+                } else {
+                    qBadge.classList.add('hidden');
+                }
+            }
+            if (scoreEl) scoreEl.textContent = data.score.toFixed(4);
+            const fpsEl = document.getElementById('fpsVal');
+            if (fpsEl) fpsEl.textContent = Math.round(data.fps) + " fps";
+            if (data.model_version) {
+                modelVerEl.textContent = data.model_version;
+                const v32Warning = document.getElementById('v32Warning');
+                if (data.model_version.includes("V32")) {
+                    v32Warning.classList.add('hidden');
+                } else {
+                    v32Warning.classList.remove('hidden');
+                }
+            }
+
+            if (data.heatmap) {
+                heatmapOverlay.src = `data:image/png;base64,${data.heatmap}`;
+                if (showHeatmap) heatmapOverlay.classList.remove('hidden');
+            } else {
+                heatmapOverlay.classList.add('hidden');
+                heatmapOverlay.src = "";
+            }
+
+            const defectSelect = document.getElementById('defectTypeSelect');
+            const saveBtn = document.getElementById('saveDefectBtn');
+            if (data.is_defect) {
+                lastDefectData = data;
+                if (defectSelect) { defectSelect.disabled = false; defectSelect.classList.remove('opacity-50'); }
+                if (saveBtn) { saveBtn.disabled = false; saveBtn.classList.remove('opacity-50'); }
+            } else {
+                lastDefectData = null;
+                if (defectSelect) { defectSelect.disabled = true; defectSelect.classList.add('opacity-50'); }
+                if (saveBtn) { saveBtn.disabled = true; saveBtn.classList.add('opacity-50'); }
+            }
+        }
+
+        async function saveDefect() {
+            const refId = document.getElementById('refSelect').value;
+            const defectType = document.getElementById('defectTypeSelect').value;
+            if (!defectType || !lastDefectData) return alert("Seleccione tipo de defecto");
+            const res = await fetch(`${API}/inference/log_defect`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reference_id: parseInt(refId), defect_type: defectType, score: lastDefectData.score, embedding: lastDefectData.embedding })
+            });
+            if (res.ok) { alert(`Defecto registrado: ${defectType}`); document.getElementById('defectTypeSelect').value = ""; }
+        }
+
+        async function deleteReference() {
+            const refId = document.getElementById('refSelect').value;
+            if (!refId || !confirm("¿Seguro? Se borrarán todos los datos del modelo.")) return;
+            await fetch(`${API}/references/${refId}`, { method: 'DELETE' });
+            refreshRefs();
+            if (activeWs) activeWs.close();
+            location.reload();
+        }
+
+        async function loadDefectTypes() {
+            const res = await fetch(`${API}/references/defect_types`);
+            const types = await res.json();
+            const container = document.getElementById('defectTypesContainer');
+            if (!container) return;
+            container.innerHTML = '<select id="defectTypeSelect" class="w-full bg-slate-700 text-white p-2 rounded text-sm border border-slate-600"><option value="">-- Seleccionar Defecto --</option>' +
+                types.map(t => `<option value="${t.name}">${t.name}</option>`).join('') +
+                '</select>' +
+                '<button id="saveDefectBtn" onclick="saveDefect()" disabled class="mt-2 w-full bg-orange-700 hover:bg-orange-600 px-3 py-2 rounded text-sm font-bold transition opacity-50">Guardar Defecto</button>';
+        }
+
+        async function addNewDefectType() {
+            const nameEl = document.getElementById('newDefectType');
+            const name = nameEl.value.trim();
+            if (!name) return;
+            const res = await fetch(`${API}/references/defect_types?name=${encodeURIComponent(name)}`, { method: 'POST' });
+            if (res.ok) { nameEl.value = ''; loadDefectTypes(); }
+        }
+
+        async function loadRefDetails() {
+            const refId = document.getElementById('refSelect').value;
+            const recBtn = document.getElementById('reconnectBtn');
+            if (refId) {
+                // Hacer visible y poner en estado "conectando" (pulse)
+                if (recBtn) {
+                    recBtn.classList.remove('hidden');
+                    recBtn.className = "bg-blue-600 px-3 rounded text-white font-bold transition flex items-center justify-center animate-pulse";
+                }
+                connectWs(refId);
+                const delBtn = document.getElementById('deleteRefBtn');
+                if (delBtn) {
+                    delBtn.disabled = false;
+                    delBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            } else {
+                if (recBtn) recBtn.classList.add('hidden');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => { refreshRefs(); loadDefectTypes(); });
+    </script>
+</body>
+
+</html>

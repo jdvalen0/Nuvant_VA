@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: nuvant-va-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - storage_data:/app/local_storage
+      - db_data:/app/db
+      - log_data:/app/logs
+    environment:
+      - ENV=production
+      - PYTHONUNBUFFERED=1
+      - STORAGE_DIR=/app/local_storage
+      - DATABASE_URL=sqlite:////app/db/nuvant.db
+      # Calibración PatchCore (Mitigación de Falsos +/-)
+      - PATCHCORE_CORESET_RATIO=0.1
+      - PATCHCORE_NEIGHBORS=9
+      # Mejora de Bordes (ROI): 0.05 = 5% recorte de bordes
+      - PATCHCORE_ROI_CROP=0.08
+      # Normalización de Luz (Opcional): poner en true para sombras
+      - PATCHCORE_USE_CLAHE=false
+    restart: always
+
+# Persistencia de datos industriales mediante volúmenes nominados
+volumes:
+  storage_data:
+  db_data:
+  log_data:
