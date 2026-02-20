@@ -135,16 +135,18 @@ async def websocket_endpoint(websocket: WebSocket, ref_id: int):
             if img is None:
                 continue
             
-            # Process with Frame Quality Filter (H7)
+            # Process with Frame Quality Filter (H7 - CORREGIDO)
             try:
                 features = extractor.extract(img)
             except ValueError as quality_error:
-                # Frame rejected by quality filter - notify client but don't crash
+                # Frame rejected by quality filter - CORREGIDO: Enviar flag especial
                 await websocket.send_json({
                     "is_defect": False,
                     "score": 0.0,
                     "fps": 0,
-                    "quality_warning": str(quality_error)
+                    "frame_rejected": True,  # Flag para diferenciar de "buena"
+                    "quality_warning": str(quality_error),
+                    "model_version": model_version
                 })
                 continue
             
@@ -230,7 +232,8 @@ async def websocket_endpoint(websocket: WebSocket, ref_id: int):
                 "embedding": features.tolist() if is_anomaly else None,
                 "recognition": recognition,
                 "heatmap": heatmap_b64,
-                "model_version": model_version
+                "model_version": model_version,
+                "frame_rejected": False  # EXPLICIT: Marcar como no rechazado para diferenciar de frames rechazados
             }
             
             await websocket.send_json(response)

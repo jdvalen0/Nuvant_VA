@@ -1,23 +1,27 @@
-venv/
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-env/
-instance/
-bin/
-include/
-lib/
-local/
-share/
-*.db
-local_storage/
-logs/
-.git/
+# Git
+.git
 .gitignore
-.vscode/
-.idea/
+
+# Python
+__pycache__
+*.pyc
+venv
+.env
+
+# Data & Logs
+local_storage
+backend/db/*.db
+backend/data/*
+scripts/
+tests/
+logs/
+
+# Docs & Temp
+docs/
+*.md
+LICENSE
 *.log
-images/
-INDUSTRIAL_TEST_SUITE*/
+
+# IDE
+.vscode
+.idea

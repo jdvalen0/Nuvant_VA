@@ -273,8 +273,33 @@ class PatchCoreDetector:
         # Calibrate threshold based on training data distances
         train_dists = self._compute_distances(all_features)
         percentile = 100.0 * (1.0 - contamination)
-        # Apply safety margin (1.1x) to ensure training data stays below anomaly limit
-        self.threshold = np.percentile(train_dists, percentile) * 1.1
+        
+        # CORREGIDO CRÍTICO: Calibración MUY generosa para GARANTIZAR cero falsos positivos
+        # El problema es que incluso con percentil 99, algunas imágenes pueden quedar fuera
+        # Solución: Usar el MÁXIMO real de entrenamiento + margen generoso
+        base_threshold = np.percentile(train_dists, percentile)
+        max_train_dist = np.max(train_dists)
+        median_train_dist = np.median(train_dists)
+        
+        # ESTRATEGIA: Usar el máximo entre:
+        # 1. Máximo real + 10% (garantiza que TODAS las imágenes de entrenamiento queden dentro)
+        # 2. Percentil 99 + 15% (margen adicional de seguridad)
+        # 3. Mediana * 3 (fallback para casos extremos)
+        # Esto es MUY generoso pero garantiza cero falsos positivos en training data
+        safety_threshold = max(
+            max_train_dist * 1.10,  # Máximo + 10% - GARANTIZA que todas las imágenes de entrenamiento queden dentro
+            base_threshold * 1.15,   # Percentil + 15% - margen adicional
+            median_train_dist * 3.0  # Fallback para casos extremos
+        )
+        
+        self.threshold = safety_threshold
+        
+        print(f"[PatchCore V32] Threshold calibration:")
+        print(f"  Percentile {percentile}% = {base_threshold:.4f}")
+        print(f"  Max training dist = {max_train_dist:.4f}")
+        print(f"  Median = {median_train_dist:.4f}")
+        print(f"  Final threshold = {self.threshold:.4f} (Max*1.10={max_train_dist*1.10:.4f})")
+        print(f"  Margin over max = {(self.threshold / max_train_dist - 1.0) * 100:.1f}%")
         
         self.is_trained = True
         
@@ -375,6 +400,10 @@ class PatchCoreDetector:
         cropped_w, cropped_h = pil_img.size
         heatmap_cropped = cv2.resize(distance_map.astype(np.float32), (cropped_w, cropped_h), interpolation=cv2.INTER_LINEAR)
         
+        # 5. Gaussian Blur (per Paper arXiv:2106.08265, sigma=4)
+        # Smooths the blocky patch predictions into a organic "thermal" map
+        heatmap_cropped = cv2.GaussianBlur(heatmap_cropped, (0, 0), sigmaX=4, sigmaY=4)
+        
         # Create full-size heatmap with zeros
         full_heatmap = np.zeros((original_size[1], original_size[0]), dtype=np.float32)
         
@@ -384,16 +413,31 @@ class PatchCoreDetector:
         top = int(h * self.roi_crop)
         
         # Paste the cropped heatmap into the middle of the full-size heatmap
-        # Check for size match due to rounding
         hh, ww = heatmap_cropped.shape
         full_heatmap[top:top+hh, left:left+ww] = heatmap_cropped[:min(hh, h-top), :min(ww, w-left)]
         
-        # Normalize full heatmap to 0-1
-        heatmap_min, heatmap_max = full_heatmap.min(), full_heatmap.max()
-        if heatmap_max > heatmap_min:
-            heatmap_normalized = (full_heatmap - heatmap_min) / (heatmap_max - heatmap_min)
+        # 6. Industrial Normalization (Threshold-Relative)
+        # Old method (Min-Max) caused "Red Noise" on perfect fabrics.
+        # New method (Corrected): Enhanced Visualization Logic
+        if self.threshold > 0:
+            # Normalize relative to threshold (0.5 = threshold)
+            # We want to boost visibility of anomalies, so we don't clamp too early
+            # factor = 1.0 means val == threshold -> 0.5 (Green/Yellow transition)
+            heatmap_normalized = 0.5 * (full_heatmap / self.threshold)
+            
+            # Non-linear boost (Sqrt) to make faint anomalies more visible (Thermal Effect)
+            # Safety Clip to prevent NaN on tiny negative float errors
+            heatmap_normalized = np.clip(heatmap_normalized, 0, None)
+            heatmap_normalized = np.power(heatmap_normalized, 0.7)
+            
+            heatmap_normalized = np.clip(heatmap_normalized, 0, 1)
         else:
-            heatmap_normalized = np.zeros_like(full_heatmap)
+            # Fallback
+             heatmap_min, heatmap_max = full_heatmap.min(), full_heatmap.max()
+             if heatmap_max > heatmap_min:
+                 heatmap_normalized = (full_heatmap - heatmap_min) / (heatmap_max - heatmap_min)
+             else:
+                 heatmap_normalized = np.zeros_like(full_heatmap)
         
         # Compute overall score (max of patch distances)
         max_distance = np.max(patch_distances)
@@ -488,32 +532,49 @@ class AnomalyDetectorV32(PatchCoreDetector):
     
     def predict(self, features=None, image=None, sensitivity_offset=0.0):
         """
-        Predict with V31-style API or new image-based API.
+        Unified prediction API for V31 (features) and V32 (images).
+        Includes auto-detection for positional arguments.
         """
+        # AUTO-DETECTION: If 'features' contains a numpy image, redirect to 'image'
+        if image is None and features is not None:
+            if isinstance(features, np.ndarray) and features.ndim == 3:
+                image = features
+                features = None
+
+        # Case 1: Image Processing (Superior PatchCore V32 Engine)
         if image is not None:
-            return super().predict(image=image, sensitivity_offset=sensitivity_offset)
-        elif features is not None:
-            # V31 compatibility: compute distance from features
+            is_anomaly, score, heatmap = super().predict(
+                image=image, 
+                sensitivity_offset=sensitivity_offset
+            )
+            return is_anomaly, score, heatmap
+            
+        # Case 2: External Features (V31 Compatibility)
+        if features is not None:
             features = np.array(features)
-            if features.ndim == 2:
-                features_flat = features.reshape(-1, features.shape[-1])
+            
+            # Canonical flattening for PatchCore (N, D)
+            if features.ndim == 3:
+                N, T, D = features.shape
+                features_flat = features.reshape(N * T, D)
             else:
-                features_flat = features
+                features_flat = features.reshape(-1, features.shape[-1])
             
-            # L2 normalize
-            norms = np.linalg.norm(features_flat, axis=1, keepdims=True)
-            features_norm = features_flat / (norms + 1e-9)
+            # Dimension Guard
+            if self.memory_bank is not None:
+                if features_flat.shape[1] != self.memory_bank.shape[1]:
+                    # Likely a V31 feature vector (2560 dims) vs V32 model (1536 dims)
+                    raise ValueError(f"Dim mismatch: expected {self.memory_bank.shape[1]}, got {features_flat.shape[1]}")
             
-            # Compute distances
-            distances = self._compute_distances(features_norm)
+            # Predict
+            distances = self._compute_distances(features_flat)
             max_distance = np.max(distances)
             
             # Apply sensitivity
-            adjusted_threshold = self.threshold * (1.0 + sensitivity_offset / 1000.0)
+            adj_threshold = self.threshold * (1.0 - sensitivity_offset / 1000.0)
+            is_anomaly = max_distance > adj_threshold
+            score = min(100.0, (max_distance / (adj_threshold + 1e-6)) * 50.0)
             
-            is_anomaly = max_distance > adjusted_threshold
-            score = min(100.0, (max_distance / (self.threshold + 1e-6)) * 50.0)
+            return is_anomaly, score, None
             
-            return is_anomaly, score
-        else:
-            raise ValueError("Must provide features or image")
+        raise ValueError("Must provide features or image")

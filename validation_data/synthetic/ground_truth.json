@@ -1,0 +1,747 @@
+{
+  "total_images": 80,
+  "base_images": 5,
+  "adulterations_per_image": 16,
+  "data": [
+    {
+      "filename": "frame_20260110-153825_pixel_1px.jpg",
+      "base_image": "frame_20260110-153825.png",
+      "defect_type": "pixel_alteration",
+      "severity": "1px",
+      "expected_detection": false,
+      "defect_location": [
+        812,
+        620,
+        0,
+        0
+      ]
+    },
+    {
+      "filename": "frame_20260110-153825_pixel_3x3.jpg",
+      "base_image": "frame_20260110-153825.png",
+      "defect_type": "pixel_alteration",
+      "severity": "3x3",
+      "expected_detection": true,
+      "defect_location": [
+        811,
+        619,
+        2,
+        2
+      ]
+    },
+    {
+      "filename": "frame_20260110-153825_pixel_10x10.jpg",
+      "base_image": "frame_20260110-153825.png",
+      "defect_type": "pixel_alteration",
+      "severity": "10x10",
+      "expected_detection": true,
+      "defect_location": [
+        807,
+        615,
+        10,
+        10
+      ]
+    },
+    {
+      "filename": "frame_20260110-153825_pixel_50x50.jpg",
+      "base_image": "frame_20260110-153825.png",
+      "defect_type": "pixel_alteration",
+      "severity": "50x50",
+      "expected_detection": true,
+      "defect_location": [
+        787,
+        595,
+        50,
+        50
+      ]
+    },
+    {
+      "filename": "frame_20260110-153825_noise_gaussian_sigma10.jpg",
+      "base_image": "frame_20260110-153825.png",
+      "defect_type": "gaussian_noise",
+      "severity": "sigma10",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-153825_noise_gaussian_sigma20.jpg",
+      "base_image": "frame_20260110-153825.png",
+      "defect_type": "gaussian_noise",
+      "severity": "sigma20",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-153825_noise_saltpepper_density001.jpg",
+      "base_image": "frame_20260110-153825.png",
+      "defect_type": "salt_pepper_noise",
+      "severity": "density001",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-153825_noise_saltpepper_density005.jpg",
+      "base_image": "frame_20260110-153825.png",
+      "defect_type": "salt_pepper_noise",
+      "severity": "density005",
+      "expected_detection": true,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-153825_lighting_sub30.jpg",
+      "base_image": "frame_20260110-153825.png",
+      "defect_type": "lighting_variation",
+      "severity": "sub30",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-153825_lighting_sub50.jpg",
+      "base_image": "frame_20260110-153825.png",
+      "defect_type": "lighting_variation",
+      "severity": "sub50",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-153825_lighting_over30.jpg",
+      "base_image": "frame_20260110-153825.png",
+      "defect_type": "lighting_variation",
+      "severity": "over30",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-153825_lighting_over50.jpg",
+      "base_image": "frame_20260110-153825.png",
+      "defect_type": "lighting_variation",
+      "severity": "over50",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-153825_compression_q30.jpg",
+      "base_image": "frame_20260110-153825.png",
+      "defect_type": "jpeg_compression",
+      "severity": "q30",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-153825_compression_q10.jpg",
+      "base_image": "frame_20260110-153825.png",
+      "defect_type": "jpeg_compression",
+      "severity": "q10",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-153825_geometric_rotate5.jpg",
+      "base_image": "frame_20260110-153825.png",
+      "defect_type": "geometric_rotation",
+      "severity": "rotate5",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-153825_geometric_scale90.jpg",
+      "base_image": "frame_20260110-153825.png",
+      "defect_type": "geometric_scale",
+      "severity": "scale90",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-023357_pixel_1px.jpg",
+      "base_image": "frame_20260110-023357.png",
+      "defect_type": "pixel_alteration",
+      "severity": "1px",
+      "expected_detection": false,
+      "defect_location": [
+        812,
+        620,
+        0,
+        0
+      ]
+    },
+    {
+      "filename": "frame_20260110-023357_pixel_3x3.jpg",
+      "base_image": "frame_20260110-023357.png",
+      "defect_type": "pixel_alteration",
+      "severity": "3x3",
+      "expected_detection": true,
+      "defect_location": [
+        811,
+        619,
+        2,
+        2
+      ]
+    },
+    {
+      "filename": "frame_20260110-023357_pixel_10x10.jpg",
+      "base_image": "frame_20260110-023357.png",
+      "defect_type": "pixel_alteration",
+      "severity": "10x10",
+      "expected_detection": true,
+      "defect_location": [
+        807,
+        615,
+        10,
+        10
+      ]
+    },
+    {
+      "filename": "frame_20260110-023357_pixel_50x50.jpg",
+      "base_image": "frame_20260110-023357.png",
+      "defect_type": "pixel_alteration",
+      "severity": "50x50",
+      "expected_detection": true,
+      "defect_location": [
+        787,
+        595,
+        50,
+        50
+      ]
+    },
+    {
+      "filename": "frame_20260110-023357_noise_gaussian_sigma10.jpg",
+      "base_image": "frame_20260110-023357.png",
+      "defect_type": "gaussian_noise",
+      "severity": "sigma10",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-023357_noise_gaussian_sigma20.jpg",
+      "base_image": "frame_20260110-023357.png",
+      "defect_type": "gaussian_noise",
+      "severity": "sigma20",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-023357_noise_saltpepper_density001.jpg",
+      "base_image": "frame_20260110-023357.png",
+      "defect_type": "salt_pepper_noise",
+      "severity": "density001",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-023357_noise_saltpepper_density005.jpg",
+      "base_image": "frame_20260110-023357.png",
+      "defect_type": "salt_pepper_noise",
+      "severity": "density005",
+      "expected_detection": true,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-023357_lighting_sub30.jpg",
+      "base_image": "frame_20260110-023357.png",
+      "defect_type": "lighting_variation",
+      "severity": "sub30",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-023357_lighting_sub50.jpg",
+      "base_image": "frame_20260110-023357.png",
+      "defect_type": "lighting_variation",
+      "severity": "sub50",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-023357_lighting_over30.jpg",
+      "base_image": "frame_20260110-023357.png",
+      "defect_type": "lighting_variation",
+      "severity": "over30",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-023357_lighting_over50.jpg",
+      "base_image": "frame_20260110-023357.png",
+      "defect_type": "lighting_variation",
+      "severity": "over50",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-023357_compression_q30.jpg",
+      "base_image": "frame_20260110-023357.png",
+      "defect_type": "jpeg_compression",
+      "severity": "q30",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-023357_compression_q10.jpg",
+      "base_image": "frame_20260110-023357.png",
+      "defect_type": "jpeg_compression",
+      "severity": "q10",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-023357_geometric_rotate5.jpg",
+      "base_image": "frame_20260110-023357.png",
+      "defect_type": "geometric_rotation",
+      "severity": "rotate5",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-023357_geometric_scale90.jpg",
+      "base_image": "frame_20260110-023357.png",
+      "defect_type": "geometric_scale",
+      "severity": "scale90",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-115614_pixel_1px.jpg",
+      "base_image": "frame_20260110-115614.png",
+      "defect_type": "pixel_alteration",
+      "severity": "1px",
+      "expected_detection": false,
+      "defect_location": [
+        812,
+        620,
+        0,
+        0
+      ]
+    },
+    {
+      "filename": "frame_20260110-115614_pixel_3x3.jpg",
+      "base_image": "frame_20260110-115614.png",
+      "defect_type": "pixel_alteration",
+      "severity": "3x3",
+      "expected_detection": true,
+      "defect_location": [
+        811,
+        619,
+        2,
+        2
+      ]
+    },
+    {
+      "filename": "frame_20260110-115614_pixel_10x10.jpg",
+      "base_image": "frame_20260110-115614.png",
+      "defect_type": "pixel_alteration",
+      "severity": "10x10",
+      "expected_detection": true,
+      "defect_location": [
+        807,
+        615,
+        10,
+        10
+      ]
+    },
+    {
+      "filename": "frame_20260110-115614_pixel_50x50.jpg",
+      "base_image": "frame_20260110-115614.png",
+      "defect_type": "pixel_alteration",
+      "severity": "50x50",
+      "expected_detection": true,
+      "defect_location": [
+        787,
+        595,
+        50,
+        50
+      ]
+    },
+    {
+      "filename": "frame_20260110-115614_noise_gaussian_sigma10.jpg",
+      "base_image": "frame_20260110-115614.png",
+      "defect_type": "gaussian_noise",
+      "severity": "sigma10",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-115614_noise_gaussian_sigma20.jpg",
+      "base_image": "frame_20260110-115614.png",
+      "defect_type": "gaussian_noise",
+      "severity": "sigma20",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-115614_noise_saltpepper_density001.jpg",
+      "base_image": "frame_20260110-115614.png",
+      "defect_type": "salt_pepper_noise",
+      "severity": "density001",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-115614_noise_saltpepper_density005.jpg",
+      "base_image": "frame_20260110-115614.png",
+      "defect_type": "salt_pepper_noise",
+      "severity": "density005",
+      "expected_detection": true,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-115614_lighting_sub30.jpg",
+      "base_image": "frame_20260110-115614.png",
+      "defect_type": "lighting_variation",
+      "severity": "sub30",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-115614_lighting_sub50.jpg",
+      "base_image": "frame_20260110-115614.png",
+      "defect_type": "lighting_variation",
+      "severity": "sub50",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-115614_lighting_over30.jpg",
+      "base_image": "frame_20260110-115614.png",
+      "defect_type": "lighting_variation",
+      "severity": "over30",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-115614_lighting_over50.jpg",
+      "base_image": "frame_20260110-115614.png",
+      "defect_type": "lighting_variation",
+      "severity": "over50",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-115614_compression_q30.jpg",
+      "base_image": "frame_20260110-115614.png",
+      "defect_type": "jpeg_compression",
+      "severity": "q30",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-115614_compression_q10.jpg",
+      "base_image": "frame_20260110-115614.png",
+      "defect_type": "jpeg_compression",
+      "severity": "q10",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-115614_geometric_rotate5.jpg",
+      "base_image": "frame_20260110-115614.png",
+      "defect_type": "geometric_rotation",
+      "severity": "rotate5",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260110-115614_geometric_scale90.jpg",
+      "base_image": "frame_20260110-115614.png",
+      "defect_type": "geometric_scale",
+      "severity": "scale90",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260201-175055_pixel_1px.jpg",
+      "base_image": "frame_20260201-175055.png",
+      "defect_type": "pixel_alteration",
+      "severity": "1px",
+      "expected_detection": false,
+      "defect_location": [
+        812,
+        620,
+        0,
+        0
+      ]
+    },
+    {
+      "filename": "frame_20260201-175055_pixel_3x3.jpg",
+      "base_image": "frame_20260201-175055.png",
+      "defect_type": "pixel_alteration",
+      "severity": "3x3",
+      "expected_detection": true,
+      "defect_location": [
+        811,
+        619,
+        2,
+        2
+      ]
+    },
+    {
+      "filename": "frame_20260201-175055_pixel_10x10.jpg",
+      "base_image": "frame_20260201-175055.png",
+      "defect_type": "pixel_alteration",
+      "severity": "10x10",
+      "expected_detection": true,
+      "defect_location": [
+        807,
+        615,
+        10,
+        10
+      ]
+    },
+    {
+      "filename": "frame_20260201-175055_pixel_50x50.jpg",
+      "base_image": "frame_20260201-175055.png",
+      "defect_type": "pixel_alteration",
+      "severity": "50x50",
+      "expected_detection": true,
+      "defect_location": [
+        787,
+        595,
+        50,
+        50
+      ]
+    },
+    {
+      "filename": "frame_20260201-175055_noise_gaussian_sigma10.jpg",
+      "base_image": "frame_20260201-175055.png",
+      "defect_type": "gaussian_noise",
+      "severity": "sigma10",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260201-175055_noise_gaussian_sigma20.jpg",
+      "base_image": "frame_20260201-175055.png",
+      "defect_type": "gaussian_noise",
+      "severity": "sigma20",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260201-175055_noise_saltpepper_density001.jpg",
+      "base_image": "frame_20260201-175055.png",
+      "defect_type": "salt_pepper_noise",
+      "severity": "density001",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260201-175055_noise_saltpepper_density005.jpg",
+      "base_image": "frame_20260201-175055.png",
+      "defect_type": "salt_pepper_noise",
+      "severity": "density005",
+      "expected_detection": true,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260201-175055_lighting_sub30.jpg",
+      "base_image": "frame_20260201-175055.png",
+      "defect_type": "lighting_variation",
+      "severity": "sub30",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260201-175055_lighting_sub50.jpg",
+      "base_image": "frame_20260201-175055.png",
+      "defect_type": "lighting_variation",
+      "severity": "sub50",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260201-175055_lighting_over30.jpg",
+      "base_image": "frame_20260201-175055.png",
+      "defect_type": "lighting_variation",
+      "severity": "over30",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260201-175055_lighting_over50.jpg",
+      "base_image": "frame_20260201-175055.png",
+      "defect_type": "lighting_variation",
+      "severity": "over50",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260201-175055_compression_q30.jpg",
+      "base_image": "frame_20260201-175055.png",
+      "defect_type": "jpeg_compression",
+      "severity": "q30",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260201-175055_compression_q10.jpg",
+      "base_image": "frame_20260201-175055.png",
+      "defect_type": "jpeg_compression",
+      "severity": "q10",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260201-175055_geometric_rotate5.jpg",
+      "base_image": "frame_20260201-175055.png",
+      "defect_type": "geometric_rotation",
+      "severity": "rotate5",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260201-175055_geometric_scale90.jpg",
+      "base_image": "frame_20260201-175055.png",
+      "defect_type": "geometric_scale",
+      "severity": "scale90",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260126-051958_pixel_1px.jpg",
+      "base_image": "frame_20260126-051958.png",
+      "defect_type": "pixel_alteration",
+      "severity": "1px",
+      "expected_detection": false,
+      "defect_location": [
+        812,
+        620,
+        0,
+        0
+      ]
+    },
+    {
+      "filename": "frame_20260126-051958_pixel_3x3.jpg",
+      "base_image": "frame_20260126-051958.png",
+      "defect_type": "pixel_alteration",
+      "severity": "3x3",
+      "expected_detection": true,
+      "defect_location": [
+        811,
+        619,
+        2,
+        2
+      ]
+    },
+    {
+      "filename": "frame_20260126-051958_pixel_10x10.jpg",
+      "base_image": "frame_20260126-051958.png",
+      "defect_type": "pixel_alteration",
+      "severity": "10x10",
+      "expected_detection": true,
+      "defect_location": [
+        807,
+        615,
+        10,
+        10
+      ]
+    },
+    {
+      "filename": "frame_20260126-051958_pixel_50x50.jpg",
+      "base_image": "frame_20260126-051958.png",
+      "defect_type": "pixel_alteration",
+      "severity": "50x50",
+      "expected_detection": true,
+      "defect_location": [
+        787,
+        595,
+        50,
+        50
+      ]
+    },
+    {
+      "filename": "frame_20260126-051958_noise_gaussian_sigma10.jpg",
+      "base_image": "frame_20260126-051958.png",
+      "defect_type": "gaussian_noise",
+      "severity": "sigma10",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260126-051958_noise_gaussian_sigma20.jpg",
+      "base_image": "frame_20260126-051958.png",
+      "defect_type": "gaussian_noise",
+      "severity": "sigma20",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260126-051958_noise_saltpepper_density001.jpg",
+      "base_image": "frame_20260126-051958.png",
+      "defect_type": "salt_pepper_noise",
+      "severity": "density001",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260126-051958_noise_saltpepper_density005.jpg",
+      "base_image": "frame_20260126-051958.png",
+      "defect_type": "salt_pepper_noise",
+      "severity": "density005",
+      "expected_detection": true,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260126-051958_lighting_sub30.jpg",
+      "base_image": "frame_20260126-051958.png",
+      "defect_type": "lighting_variation",
+      "severity": "sub30",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260126-051958_lighting_sub50.jpg",
+      "base_image": "frame_20260126-051958.png",
+      "defect_type": "lighting_variation",
+      "severity": "sub50",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260126-051958_lighting_over30.jpg",
+      "base_image": "frame_20260126-051958.png",
+      "defect_type": "lighting_variation",
+      "severity": "over30",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260126-051958_lighting_over50.jpg",
+      "base_image": "frame_20260126-051958.png",
+      "defect_type": "lighting_variation",
+      "severity": "over50",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260126-051958_compression_q30.jpg",
+      "base_image": "frame_20260126-051958.png",
+      "defect_type": "jpeg_compression",
+      "severity": "q30",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260126-051958_compression_q10.jpg",
+      "base_image": "frame_20260126-051958.png",
+      "defect_type": "jpeg_compression",
+      "severity": "q10",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260126-051958_geometric_rotate5.jpg",
+      "base_image": "frame_20260126-051958.png",
+      "defect_type": "geometric_rotation",
+      "severity": "rotate5",
+      "expected_detection": false,
+      "defect_location": null
+    },
+    {
+      "filename": "frame_20260126-051958_geometric_scale90.jpg",
+      "base_image": "frame_20260126-051958.png",
+      "defect_type": "geometric_scale",
+      "severity": "scale90",
+      "expected_detection": false,
+      "defect_location": null
+    }
+  ]
+}

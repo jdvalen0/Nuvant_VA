@@ -162,20 +162,20 @@
                         <p class="text-xs">(Simulación de Cámara)</p>
                     </div>
 
-                    <!-- Capa de Mapa de Calor -->
+                    <!-- Capa de Mapa de Calor (More visible!) -->
                     <img id="heatmapOverlay"
-                        class="absolute inset-0 w-full h-full object-contain pointer-events-none opacity-50 hidden" />
+                        class="absolute inset-0 w-full h-full object-contain pointer-events-none opacity-60 hidden mix-blend-overlay" />
 
-                    <!-- Indicador de Resultado -->
+                    <!-- Indicador de Resultado (Reubicado para no tapar defectos) -->
                     <div id="resultBadge"
-                        class="absolute top-4 right-4 px-4 py-2 rounded-lg font-bold text-xl hidden shadow-xl bg-slate-900/80 backdrop-blur">
-                        Procesando...
+                        class="absolute bottom-4 right-4 px-4 py-2 rounded-lg font-bold text-xl hidden shadow-xl bg-slate-900/80 backdrop-blur">
+                        Esperando imagen...
                     </div>
 
                     <!-- Advertencia de Calidad (Nueva) -->
                     <div id="qualityBadge"
-                        class="absolute bottom-4 left-4 right-4 px-3 py-1.5 rounded-lg font-bold text-[10px] hidden shadow-lg bg-orange-600/90 text-white text-center backdrop-blur animate-bounce">
-                        ⚠️ ADVERTENCIA DE CALIDAD
+                        class="absolute bottom-4 left-4 right-4 px-3 py-1.5 rounded-lg font-bold text-[10px] hidden shadow-lg bg-yellow-600/90 text-black text-center backdrop-blur animate-bounce">
+                        ⚠️ PROBLEMA TÉCNICO DE CAPTURA
                     </div>
                 </div>
 
@@ -200,13 +200,17 @@
 
                 <!-- Métricas -->
                 <div class="mt-4 grid grid-cols-2 gap-4">
-                    <div class="bg-slate-900 p-3 rounded">
-                        <p class="text-xs text-slate-400">Puntaje de Anomalía (Distancia)</p>
-                        <p id="scoreVal" class="text-xl font-mono text-cyan-400">0.00</p>
+                    <div class="bg-slate-900 p-3 rounded h-32 flex flex-col justify-center">
+                        <p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Tendencia de Anomalía</p>
+                        <canvas id="scoreChart" class="w-full h-16"></canvas>
                     </div>
-                    <div class="bg-slate-900 p-3 rounded">
-                        <p class="text-xs text-slate-400">Velocidad</p>
-                        <p id="fpsVal" class="text-lg font-mono text-slate-300">0 fps</p>
+                    <div class="bg-slate-900 p-3 rounded flex flex-col justify-between">
+                        <div>
+                            <p class="text-xs text-slate-400">Puntaje / Velocidad</p>
+                            <p class="text-xl font-mono text-cyan-400"><span id="scoreVal">0.00</span> <span
+                                    class="text-xs text-slate-500">pts</span></p>
+                        </div>
+                        <p id="fpsVal" class="text-xs font-mono text-slate-500 text-right">0 fps</p>
                     </div>
                 </div>
 
@@ -235,6 +239,59 @@
         const WS = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/inference/ws`;
         let activeWs = null;
         let lastDefectData = null;
+        let scoreChart = null;
+        const maxDataPoints = 50;
+        let chartData = Array(maxDataPoints).fill(0);
+        let chartLabels = Array(maxDataPoints).fill('');
+        let hasProcessedImage = false; // CRÍTICO: Flag para rastrear si se ha procesado alguna imagen
+
+        function initChart() {
+            const ctx = document.getElementById('scoreChart').getContext('2d');
+            scoreChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        data: chartData,
+                        borderColor: '#22d3ee',
+                        backgroundColor: 'rgba(34, 211, 238, 0.1)',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                color: '#94a3b8',
+                                callback: function (value) {
+                                    return value + ' pts';
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Puntaje de Anomalía (0-100 pts)',
+                                color: '#94a3b8',
+                                font: { size: 11 }
+                            }
+                        },
+                        x: {
+                            ticks: { color: '#94a3b8' }
+                        }
+                    }
+                }
+            });
+        }
 
         async function refreshRefs() {
             const res = await fetch(`${API}/references/`);
@@ -326,12 +383,30 @@
         function handleFiles(files) {
             const file = files[0];
             if (file && file.type.startsWith('image/')) {
+                // CRÍTICO: Resetear flag - nueva imagen siendo procesada
+                hasProcessedImage = false;
+
+                // CORREGIDO CRÍTICO: Ocultar badge y resetear UI al arrastrar nueva imagen
+                const badge = document.getElementById('resultBadge');
+                const scoreEl = document.getElementById('scoreVal');
+                const fpsEl = document.getElementById('fpsVal');
+
+                if (badge) {
+                    badge.classList.add('hidden');
+                    badge.textContent = "Procesando...";
+                }
+                if (scoreEl) scoreEl.textContent = "0.0000";
+                if (fpsEl) fpsEl.textContent = "0 fps";
+
                 const reader = new FileReader();
                 reader.readAsArrayBuffer(file);
                 reader.onloadend = () => {
                     const url = URL.createObjectURL(file);
-                    dropZone.innerHTML = `<img src="${url}" class="w-full h-full object-contain" />`;
-                    dropZone.classList.remove('border-2', 'border-dashed');
+                    const dropZone = document.getElementById('dropZone');
+                    if (dropZone) {
+                        dropZone.innerHTML = `<img src="${url}" class="w-full h-full object-contain" />`;
+                        dropZone.classList.remove('border-2', 'border-dashed');
+                    }
                     sendToWs(reader.result);
                 }
             }
@@ -339,6 +414,16 @@
 
         function connectWs(refId) {
             console.log(`Intentando conectar a ref ${refId}...`);
+
+            // CRÍTICO: Resetear flag al conectar - no se ha procesado imagen aún
+            hasProcessedImage = false;
+
+            // CRÍTICO: Asegurar que badge esté oculto al conectar
+            const badge = document.getElementById('resultBadge');
+            if (badge) {
+                badge.classList.add('hidden');
+            }
+
             if (activeWs) activeWs.close();
             activeWs = new WebSocket(`${WS}/${refId}`);
 
@@ -401,36 +486,93 @@
         }
 
         function updateUI(data) {
+            // CORREGIDO CRÍTICO: Validación MUY estricta - solo procesar respuestas de procesamiento real
+            if (!data) {
+                return;
+            }
+
+            // DEBE tener score definido Y ser un número válido (no undefined, no null)
+            // O debe tener frame_rejected explícitamente true
+            // O debe tener error
+            const hasValidScore = typeof data.score === 'number' && !isNaN(data.score);
+            const hasFrameRejected = data.frame_rejected === true;
+            const hasError = data.error !== undefined;
+
+            if (!hasValidScore && !hasFrameRejected && !hasError) {
+                // IGNORAR completamente - no es una respuesta de procesamiento
+                console.log("Ignoring message (not a processing result):", data);
+                return;
+            }
+
+            // CRÍTICO: Marcar que se ha procesado una imagen (respuesta real del servidor)
+            hasProcessedImage = true;
+
             const badge = document.getElementById('resultBadge');
             const scoreEl = document.getElementById('scoreVal');
             const heatmapOverlay = document.getElementById('heatmapOverlay');
             const modelVerEl = document.getElementById('modelVersion');
             const showHeatmap = document.getElementById('showHeatmap').checked;
 
-            if (badge) {
+            // CRÍTICO: Solo mostrar badge si realmente se procesó una imagen
+            if (badge && hasProcessedImage) {
                 badge.classList.remove('hidden');
-                if (data.is_defect) {
+                if (data.frame_rejected === true) {
+                    // Problema técnico de captura (NO es defecto de tela)
+                    // Usar gris/amarillo para diferenciar de estados de tela
+                    badge.textContent = "⚠️ ERROR DE CAPTURA";
+                    badge.className = "absolute top-4 right-4 px-4 py-2 rounded-lg font-bold text-xl shadow-xl backdrop-blur bg-yellow-600 text-black animate-pulse";
+                    if (data.quality_warning) {
+                        // Mensaje más claro: problema técnico, no defecto
+                        const reason = data.quality_warning.includes("Blur") ? "Imagen borrosa" :
+                            data.quality_warning.includes("darkness") ? "Imagen muy oscura" :
+                                data.quality_warning.includes("Overexposed") ? "Imagen sobreexpuesta" :
+                                    "Problema técnico de captura";
+                        badge.innerHTML = `⚠️ ERROR DE CAPTURA<br/><span class="text-xs opacity-90">${reason} - No se pudo analizar</span>`;
+                    }
+                } else if (data.is_defect) {
+                    // Defecto detectado en la TELA (rojo)
                     badge.textContent = "DEFECTO DETECTADO";
-                    badge.className = "absolute top-4 right-4 px-4 py-2 rounded-lg font-bold text-xl shadow-xl backdrop-blur bg-red-600 text-white animate-pulse";
+                    badge.className = "absolute bottom-4 right-4 px-4 py-2 rounded-lg font-bold text-xl shadow-xl backdrop-blur bg-red-600 text-white animate-pulse";
                     if (data.recognition && data.recognition.label) {
                         badge.innerHTML = `DEFECTO DETECTADO<br/><span class="text-xs opacity-90">Tipo: ${data.recognition.label} (${Math.round(data.recognition.confidence * 100)}%)</span>`;
                     }
+                } else if (hasValidScore) {
+                    // ✅ Tela sin defectos (verde) - SOLO si hay score válido Y se procesó imagen
+                    badge.textContent = "CALIDAD OK";
+                    badge.className = "absolute bottom-4 right-4 px-4 py-2 rounded-lg font-bold text-xl shadow-xl backdrop-blur bg-green-600 text-white";
+                }
+            } else {
+                // CRÍTICO: Si no se ha procesado imagen, mantener badge oculto SIEMPRE
+                if (badge) {
+                    badge.classList.add('hidden');
                 }
             }
 
-            // Quality Warning Support (Nueva)
+            // Quality Warning Support (CORREGIDO: Solo mostrar si frame fue rechazado)
             const qBadge = document.getElementById('qualityBadge');
             if (qBadge) {
-                if (data.quality_warning) {
+                if (data.frame_rejected && data.quality_warning) {
                     qBadge.textContent = "⚠️ " + data.quality_warning;
                     qBadge.classList.remove('hidden');
                 } else {
                     qBadge.classList.add('hidden');
                 }
             }
-            if (scoreEl) scoreEl.textContent = data.score.toFixed(4);
+            // CORREGIDO: Validar score antes de usar
+            if (scoreEl && data.score !== undefined) {
+                scoreEl.textContent = typeof data.score === 'number' ? data.score.toFixed(4) : "0.0000";
+            }
             const fpsEl = document.getElementById('fpsVal');
-            if (fpsEl) fpsEl.textContent = Math.round(data.fps) + " fps";
+            if (fpsEl && data.fps !== undefined) {
+                fpsEl.textContent = Math.round(data.fps) + " fps";
+            }
+
+            // Actualizar Chart (solo si hay score válido)
+            if (scoreChart && data.score !== undefined && typeof data.score === 'number') {
+                chartData.push(data.score);
+                if (chartData.length > maxDataPoints) chartData.shift();
+                scoreChart.update();
+            }
             if (data.model_version) {
                 modelVerEl.textContent = data.model_version;
                 const v32Warning = document.getElementById('v32Warning');
@@ -505,6 +647,28 @@
         async function loadRefDetails() {
             const refId = document.getElementById('refSelect').value;
             const recBtn = document.getElementById('reconnectBtn');
+            const badge = document.getElementById('resultBadge');
+            const dropZone = document.getElementById('dropZone');
+            const scoreEl = document.getElementById('scoreVal');
+            const fpsEl = document.getElementById('fpsVal');
+
+            // CRÍTICO: Resetear flag - no se ha procesado ninguna imagen aún
+            hasProcessedImage = false;
+
+            // CORREGIDO CRÍTICO: Resetear COMPLETAMENTE UI al cambiar de referencia
+            if (badge) {
+                badge.classList.add('hidden');
+                badge.textContent = "Esperando imagen...";
+            }
+            if (scoreEl) scoreEl.textContent = "0.0000";
+            if (fpsEl) fpsEl.textContent = "0 fps";
+
+            // Resetear dropZone a estado inicial
+            if (dropZone) {
+                dropZone.innerHTML = '<p>Arrastre Imagen para Probar</p><p class="text-xs">(Simulación de Cámara)</p>';
+                dropZone.classList.add('border-2', 'border-dashed');
+            }
+
             if (refId) {
                 // Hacer visible y poner en estado "conectando" (pulse)
                 if (recBtn) {
@@ -522,7 +686,11 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => { refreshRefs(); loadDefectTypes(); });
+        document.addEventListener('DOMContentLoaded', () => {
+            refreshRefs();
+            loadDefectTypes();
+            initChart();
+        });
     </script>
 </body>
 
