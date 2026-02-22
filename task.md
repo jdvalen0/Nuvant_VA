@@ -29,3 +29,5 @@
 - [ ] Integration Testing (Frontend <-> Backend) <!-- id: 15 -->
 - [ ] Performance Validation (FPS, Latency) <!-- id: 16 -->
 - [ ] User Documentation & Deployment Guide <!-- id: 17 -->
+
+## Check: Configuración en Venus-series OK
