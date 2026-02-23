@@ -29,5 +29,10 @@ def on_startup():
 def read_root():
     return {"status": "ok", "system": "Nuvant Vision System"}
 
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon():
+    from fastapi.responses import Response
+    return Response(status_code=204)
+
 app.include_router(references.router, prefix="/api/references", tags=["references"])
 app.include_router(inference.router, prefix="/api/inference", tags=["inference"])

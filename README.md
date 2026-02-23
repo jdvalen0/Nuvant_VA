@@ -28,7 +28,8 @@ git clone <URL_DE_TU_REPOSITORIO_AQUÍ>
 cd Nuvant_VA
 
 # 2. Iniciar el sistema con Docker (Modo Producción)
-docker-compose up -d --build
+# El docker-compose.yml y el Dockerfile usados están en docker/
+docker-compose -f docker/docker-compose.yml up -d --build
 ```
 
 El sistema estará disponible automáticamente en `http://localhost:8000/static/index.html`.
@@ -37,7 +38,7 @@ El sistema estará disponible automáticamente en `http://localhost:8000/static/
 
 ## 🛠️ Estructura del Proyecto
 - `backend/`: Núcleo de IA y API FastAPI.
-- `docker/`: Configuración de contenedores e infraestructura.
+- `docker/`: **Docker en uso**: `docker/docker-compose.yml` y `docker/Dockerfile` (el `Dockerfile` en la raíz es alternativo).
 - `docs/`: Manuales técnicos y protocolos de prueba.
 - `scripts/`: Herramientas de auditoría y diagnóstico.
 
